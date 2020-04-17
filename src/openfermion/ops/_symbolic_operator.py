@@ -305,7 +305,7 @@ class SymbolicOperator:
             return '0'
         string_rep = ''
         for term, coeff in sorted(self.terms.items()):
-            if numpy.isclose(coeff, 0.0):
+            if numpy.isclose(coeff, EQ_TOLERANCE, atol = EQ_TOLERANCE):
                 continue
             tmp_string = '{} ['.format(coeff)
             for factor in term:
