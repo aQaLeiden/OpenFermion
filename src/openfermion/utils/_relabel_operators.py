@@ -1,56 +1,148 @@
-from openfermion import QubitOperator
-from openfermion import FermionOperator
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 
-def relabel_fermi_operator(fermi_operators,active_space_start):
-    '''
-    Replaces the labels of a fermionic operator to be within the active space.
+"""Relabel FermionOperator and QubitOperator"""
+
+from openfermion import QubitOperator, FermionOperator, count_qubits
+
+
+def _relabel_single_pauli(operator, active_space_start, start_num_qbts):
+    """
+    Relabel single Pauli operator.
     
     Args:
-        fermi_operators    (list, FermionOperator): List or FermionOperator of excitations.
-        active_space_start (int): spatial orbit from where the active space starts.
-    
+        operator (QubitOperator): Operator to relabel.
+        active_space_start (int): spatial orbit from where the active space
+            starts.
+        start_num_qbts (int): number of qubits before reducing active space.
     Returns:
-        relab_operator (FermionOperator): The relabeled version of the fermi_operators
-    '''
-    if not isinstance(fermi_operators, (list, FermionOperator)):
-        raise TypeError('fermi_operators must be a FermionOperator object.')
+        relabel_operator (QubitOperator): Operator with reduced labels.
         
-    relab_operator = FermionOperator('1', 1.0)
-    relab_operator += - FermionOperator('1', 1.0) #Start with the FermionOperator type
-    
-    for operator in fermi_operators:        
-        qubits  = list(operator.terms.keys())[0]
-        temp_term = [] #make list to store relabeled terms
-        for i in range(len(qubits)):
-            temp_term.append((qubits[i][0]-2*active_space_start,qubits[i][1])) #append tuple of new label
+    Raises:
+        TypeError: if operator is not a QubitOperator.
+        ValueError: if number of terms in operator is more than 1.
+    """
+    if not isinstance(operator, QubitOperator):
+        raise TypeError('Input must be a QubitOperator.')
+    if len(operator.terms) > 1:
+        raise ValueError('Input has more than 1 Pauli string.')
+    if list(operator.terms.keys())[0] == (): #Do nothing if operator is empty
+        return operator 
+    if 2* active_space_start > start_num_qbts:
+        raise ValueError('Starting active space larger than qubits.')
 
-        relab_operator += FermionOperator(temp_term, list(operator.terms.values())[0])
+    qbts, paus = zip(*list(operator.terms.keys())[0])
 
-    return relab_operator
+    new_label = str()
+    for q, p in zip(qbts, paus):
+        if q in list(range(2*active_space_start)):
+            return QubitOperator()
+        else:
+            new_q = q - 2*(active_space_start)
+            new_label+= p+str(new_q)+str(' ')
 
-def relabel_pauli_operator(qubit_operators, active_space_start):
-    '''
-    Replaces the labels of a qubit operator to be within the active space.
+    return QubitOperator(new_label, list(operator.terms.values())[0])
+
+
+def relabel_qubitoperator(qubitop, active_space_start):
+    """
+    Relabel qubitop with reduced activate space.
     
     Args:
-        pauli_operators    (list, QubitOperator): List or QubitOperator of Paulis.
-        active_space_start (int): spatial orbit from where the active space starts.
-    
+        operator (QubitOperator): Operator to relabel.
+        active_space_start (int): spatial orbit from where the active space
+            starts.
     Returns:
-        relab_qubitop (QubitOperator): The relabeled version of the pauli_operators
-    '''
-    if not isinstance(qubit_operators, (list, QubitOperator)):
+        relabel_operator (QubitOperator): Operator with reduced labels.
+        
+    Raises:
+        TypeError: if operator is not a QubitOperator.
+        ValueError: if number of terms in operator is more than 1.
+    """
+    if not isinstance((active_space_start), int):
+        raise TypeError('Only int variables.')
+    if not isinstance(qubitop, (list, QubitOperator)):
         raise TypeError('qubit_operators must be a QubitOperator object.')
-        
-    relab_qubitop = QubitOperator('X0', 0.0)
-    relab_qubitop += - QubitOperator('X0', 0.0) #Start with the QubitOperator type
+    start_num_qbts = count_qubits(qubitop)
     
-    for pauli in qubit_operators:        
-        qubits, paus = zip(*list(pauli.terms.keys())[0])
-        temp_term = ' '
-        for i in range(len(paus)):
-            temp_term += paus[i]+str(qubits[i]-2*active_space_start)+' '
-            
-        relab_qubitop += QubitOperator(temp_term,list(pauli.terms.values())[0])
+    new_qubitop = QubitOperator()
+    for qop in qubitop:
+        new_qubitop+=_relabel_single_pauli(qop, active_space_start, start_num_qbts)
         
-    return relab_qubitop
+    return new_qubitop
+
+
+def _relabel_single_fermi(operator, active_space_start, start_num_qbts):
+    """
+    Relabel single Pauli operator.
+    
+    Args:
+        operator (FermionOperator): Operator to relabel.
+        active_space_start (int): spatial orbit from where the active space
+            starts.
+        start_num_qbts (int): number of qubits before reducing active space.
+    Returns:
+        relabel_operator (FermionOperator): Operator with reduced labels.
+        
+    Raises:
+        TypeError: if operator is not a FermionOperator.
+        ValueError: if number of terms in operator is more than 1.
+    """
+    if not isinstance(operator, FermionOperator):
+        raise TypeError('Input must be a FermionOperator.')
+    if len(operator.terms) > 1:
+        raise ValueError('Input has more than FermionOperator.')
+    if list(operator.terms.keys())[0] == (): #Do nothing if operator is empty
+        return operator 
+    if 2* active_space_start > start_num_qbts:
+        raise ValueError('Starting active space larger than qubits.')
+
+    qbts, cre_ann = zip(*list(operator.terms.keys())[0])
+    
+    new_label = []  
+    for q,t in zip(qbts,cre_ann):
+        if q in list(range(2*active_space_start)):
+            return FermionOperator()
+        else:
+            new_q = (q -2*active_space_start, t)
+            new_label.append(new_q) #append tuple of new label
+
+    return FermionOperator(new_label, list(operator.terms.values())[0])
+
+def relabel_fermionoperator(fermiop, active_space_start):
+    """
+    Relabel fermiop with reduced activate space.
+    
+    Args:
+        operator (FermionOperator): Operator to relabel.
+        active_space_start (int): spatial orbit from where the active space
+            starts.
+    Returns:
+        relabel_operator (FermionOperator): Operator with reduced labels.
+        
+    Raises:
+        TypeError: if operator is not a FermionOperator.
+        ValueError: if number of terms in operator is more than 1.
+    """
+    if not isinstance((active_space_start), int):
+        raise TypeError('Only int variables.')
+    if not isinstance(fermiop, (list, FermionOperator)):
+        raise TypeError('fermiop must be a QubitOperator object.')
+    start_num_qbts = count_qubits(fermiop)
+    
+    new_fermiop = FermionOperator()
+    for fop in fermiop:
+        new_fermiop+=_relabel_single_fermi(fop, active_space_start, start_num_qbts)
+        
+    return new_fermiop
+
+
