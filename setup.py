@@ -16,6 +16,7 @@ from setuptools import setup, find_packages
 
 
 # This reads the __version__ variable from openfermion/_version.py
+__version__ = ''
 exec(open('src/openfermion/_version.py').read())
 
 # Readme file as long_description:
@@ -44,13 +45,16 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,
     package_data={
-        '': [os.path.join('src', 'openfermion', 'data', '*.hdf5'),
-             os.path.join('src', 'openfermion', 'data', '*.npy')]
+        '': [
+            os.path.join('src', 'openfermion', 'data', '*.hdf5'),
+            os.path.join('src', 'openfermion', 'data', '*.npy')
+        ]
     },
     data_files=[('openfermion/examples', [
-                 'examples/binary_code_transforms_demo.ipynb',
-                 'examples/bosonic_operator_tutorial.ipynb',
-                 'examples/jordan_wigner_and_bravyi_kitaev_transforms.ipynb',
-                 'examples/openfermion_tutorial.ipynb',
-                 'examples/performance_benchmarks.py'])],
-    )
+        'docs/tutorials/binary_code_transforms.ipynb',
+        'docs/tutorials/bosonic_operators.ipynb',
+        'docs/tutorials/intro_to_openfermion.ipynb',
+        'docs/tutorials/jordan_wigner_and_bravyi_kitaev_transforms.ipynb',
+        'examples/performance_benchmarks.py'
+    ])],
+)

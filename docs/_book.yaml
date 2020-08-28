@@ -1,0 +1,37 @@
+upper_tabs:
+# Dropdown menu
+- name: "Software"
+  path: /software
+  is_default: true
+  menu:
+  - include: /_book/menu_software.yaml
+  lower_tabs:
+    # Subsite tabs
+    other:
+    - name: "Guide & Tutorials"
+      contents:
+      - title: "Overview"
+        path: /openfermion/overview
+      - title: "Install"
+        path: /openfermion/install
+      - title: "Projects"
+        path: /openfermion/projects
+
+      - heading: "Tutorials"
+      - title: "Introduction to OpenFermion"
+        path: /openfermion/tutorials/intro_to_openfermion
+      - title: "Bosonic operators"
+        path: /openfermion/tutorials/bosonic_operators
+      - title: "Lowering qubit requirements using binary codes"
+        path: /openfermion/tutorials/binary_code_transforms
+      - title: "The Jordan-Wigner and Bravyi-Kitaev transforms"
+        path: /openfermion/tutorials/jordan_wigner_and_bravyi_kitaev_transforms
+
+    - name: "API"
+      skip_translation: true
+      contents:
+      - title: "All Symbols"
+        path: /openfermion/api_docs/python/
+      - include: /openfermion/api_docs/python/_toc.yaml
+
+- include: /_book/upper_tabs_right.yaml
