@@ -12,7 +12,8 @@
 
 """Relabel FermionOperator and QubitOperator"""
 
-from openfermion import QubitOperator, FermionOperator, count_qubits
+from openfermion.ops.operators import QubitOperator, FermionOperator
+from . import count_qubits
 
 
 def _relabel_single_pauli(operator, active_space_start, start_num_qbts):
