@@ -61,10 +61,3 @@ from .rdm_mapping_functions import (
 from .operator_relabel import (
 operator_relabel
 )
-
-from ._relabel_operators import (
-_relabel_single_pauli,
-relabel_qubitoperator,
-_relabel_single_fermi,
-relabel_fermionoperator,
-)
