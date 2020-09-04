@@ -59,7 +59,8 @@ from .rdm_mapping_functions import (
 )
 
 from .operator_relabel import (
-operator_relabel)
+operator_relabel
+)
 
 from ._relabel_operators import (
 _relabel_single_pauli,
