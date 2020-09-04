@@ -57,3 +57,10 @@ from .rdm_mapping_functions import (
     map_particle_hole_dm_to_one_pdm,
     map_particle_hole_dm_to_two_pdm,
 )
+
+from ._relabel_operators import (
+_relabel_single_pauli,
+relabel_qubitoperator,
+_relabel_single_fermi,
+relabel_fermionoperator,
+)
