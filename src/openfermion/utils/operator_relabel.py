@@ -123,16 +123,16 @@ def operator_relabel(operator: Union[QubitOperator, FermionOperator],
             term = _relabel_single_pauli(term, active_space_start,
                                          initial_num_qubits)
             relabeled_op += QubitOperator(term[0], term[1])
-            print(term)
+
         return relabeled_op
 
     elif isinstance(operator, FermionOperator):
         relabeled_op = FermionOperator()
         for term in operator.terms.items():
-            print(term)
+
             term = _relabel_single_fermion(term, active_space_start,
                                            initial_num_qubits)
-            print(term)
+
             relabeled_op += FermionOperator(term[0], term[1])
         return relabeled_op
 
