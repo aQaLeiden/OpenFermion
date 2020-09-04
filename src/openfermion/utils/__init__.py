@@ -58,6 +58,9 @@ from .rdm_mapping_functions import (
     map_particle_hole_dm_to_two_pdm,
 )
 
+from .operator_relabel import (
+operator_relabel)
+
 from ._relabel_operators import (
 _relabel_single_pauli,
 relabel_qubitoperator,
