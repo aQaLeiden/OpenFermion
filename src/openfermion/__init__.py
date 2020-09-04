@@ -349,10 +349,7 @@ from openfermion.utils import (
     map_two_hole_dm_to_one_hole_dm,
     map_particle_hole_dm_to_one_pdm,
     map_particle_hole_dm_to_two_pdm,
-    _relabel_single_pauli,
-    relabel_qubitoperator,
-    _relabel_single_fermi,
-    relabel_fermionoperator,
+    operator_relabel
 )
 
 from ._version import __version__
