@@ -42,7 +42,7 @@ def _relabel_single_pauli(term: Tuple, active_space_start: int,
     new_label = str()
     for qbt, pau in zip(qubits, paulis):
         if qbt in list(range(2 * active_space_start)):
-            continue
+            return None
         else:
             qbt = qbt - 2 * (active_space_start)
             new_label += pau + str(qbt) + str(' ')
@@ -77,7 +77,7 @@ def _relabel_single_fermion(term: Tuple, active_space_start: int,
     new_label = []
     for fer, act in zip(fermion, action):
         if fer in list(range(2 * active_space_start)):
-            continue
+            return None
         else:
             new_q = (fer - 2 * active_space_start, act)
             new_label.append(new_q)  # append tuple of new label
@@ -119,10 +119,13 @@ def operator_relabel(operator: Union[QubitOperator, FermionOperator],
     if isinstance(operator, QubitOperator):
         relabeled_op = QubitOperator()
         for term in operator.terms.items():
-            print(term)
+
             term = _relabel_single_pauli(term, active_space_start,
                                          initial_num_qubits)
-            relabeled_op += QubitOperator(term[0], term[1])
+            if term is None:
+                continue
+            else:
+                relabeled_op += QubitOperator(term[0], term[1])
 
         return relabeled_op
 
@@ -133,7 +136,10 @@ def operator_relabel(operator: Union[QubitOperator, FermionOperator],
             term = _relabel_single_fermion(term, active_space_start,
                                            initial_num_qubits)
 
-            relabeled_op += FermionOperator(term[0], term[1])
+            if term is None:
+                continue
+            else:
+                relabeled_op += FermionOperator(term[0], term[1])
         return relabeled_op
 
     else:
